@@ -1,0 +1,66 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-ingress
+  namespace: demo
+  annotations:
+    networking.gke.io/v1beta1.FrontendConfig: demo-frontend-config
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/common-name: demo.bigmyx.net
+    acme.cert-manager.io/http01-edit-in-place: "true"
+  labels:
+    app: demo
+spec:
+  tls:
+  - hosts:
+    - demo.bigmyx.net
+    secretName: demo-cert-secret
+  rules:
+  - host: demo.bigmyx.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: demo-nginx
+            port:
+              number: 80
+      - pathType: Prefix
+        path: /app
+        backend:
+          service:
+            name: gateway
+            port:
+              number: 4000
+  defaultBackend:
+    service:
+      name: demo-nginx
+      port:
+        number: 80
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: demo-backend-config
+  namespace: demo
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /app/healthcheck
+    port: 4000
+---
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+ name: demo-frontend-config
+ namespace: demo
+spec:
+ redirectToHttps:
+   enabled: true
+   responseCodeName: PERMANENT_REDIRECT

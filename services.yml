@@ -1,0 +1,66 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: accounts
+  namespace: demo
+spec:
+  selector:
+    app: accounts
+  ports:
+    - port: 4001
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: reviews
+  namespace: demo
+spec:
+  selector:
+    app: reviews
+  ports:
+    - port: 4002
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: products
+  namespace: demo
+spec:
+  selector:
+    app: products
+  ports:
+    - port: 4003
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: inventory
+  namespace: demo
+spec:
+  selector:
+    app: inventory
+  ports:
+    - port: 4004
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gateway
+  namespace: demo
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/backend-config: '{"default": "demo-backend-config"}'
+spec:
+  selector:
+    app: gateway
+  ports:
+    - port: 4000
+  type: NodePort

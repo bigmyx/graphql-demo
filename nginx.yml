@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-nginx
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: demo-nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-nginx
+    spec:
+      volumes:
+      - name: nginx-index-file
+        configMap:
+          name: index-html-configmap
+      containers:
+      - name: demo-nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-index-file
+          mountPath: /usr/share/nginx/html/
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-nginx
+  namespace: demo
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  selector:
+    app: demo-nginx
+  ports:
+    - port: 80
+  type: ClusterIP
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: index-html-configmap
+  namespace: demo
+data:
+  index.html: |
+    <htlm><a href="/app">app</a></html>
