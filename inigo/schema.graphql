@@ -1,0 +1,33 @@
+
+schema {
+	query: Query
+}
+
+type Query {
+	me: User
+   topProducts(first: Int = 5): [Product]
+}
+
+type User @key(fields: "id") {
+	id: ID!
+	name: String
+	username: String
+   reviews: [Review]
+}
+
+type Product @key(fields: "upc") {
+   name: String
+	upc: String! 
+	weight: Int 
+	price: Int 
+	inStock: Boolean
+	shippingEstimate: Int @requires(fields: "price weight")
+   reviews: [Review]
+}
+
+type Review @key(fields: "id") {
+	id: ID!
+	body: String
+	author: User @provides(fields: "username")
+	product: Product
+}
