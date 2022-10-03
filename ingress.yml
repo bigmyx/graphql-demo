@@ -7,17 +7,17 @@ metadata:
   annotations:
     networking.gke.io/v1beta1.FrontendConfig: demo-frontend-config
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    cert-manager.io/common-name: demo.bigmyx.net
+    cert-manager.io/common-name: demo.bigmyx.net #TODO: update to yours 
     acme.cert-manager.io/http01-edit-in-place: "true"
   labels:
     app: demo
 spec:
   tls:
   - hosts:
-    - demo.bigmyx.net
+    - demo.bigmyx.net #TODO: update to yours
     secretName: demo-cert-secret
   rules:
-  - host: demo.bigmyx.net
+  - host: demo.bigmyx.net #TODO: update to yours
     http:
       paths:
       - pathType: Prefix
